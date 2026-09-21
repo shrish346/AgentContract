@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+node_modules/
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+.DS_Store
