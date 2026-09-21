@@ -6,7 +6,7 @@ import {SafeERC20} from "openzeppelin-contracts/contracts/token/ERC20/utils/Safe
 
 /// @title AgentBudget
 /// @notice Holds an operator's USDC and lets registered agents spend it under
-///         per-call and per-day limits. Agents hold a key, never funds.
+///         per-call and per-day limits. Agents only have a key, but they can never make payment.
 contract AgentBudget {
     using SafeERC20 for IERC20;
 
@@ -14,13 +14,13 @@ contract AgentBudget {
 
     struct Policy {
         uint128 perCallMax; // max amount for a single pay() call
-        uint128 dailyMax;   // max cumulative amount per UTC day
-        bool active;        // false = revoked or never registered
+        uint128 dailyMax; // max cumulative amount per UTC day
+        bool active; // false = revoked or never registered
     }
 
     struct Spend {
-        uint128 spent;  // amount spent in `day`
-        uint64 day;     // block.timestamp / 1 days at last write
+        uint128 spent; // amount spent in `day`
+        uint64 day; // block.timestamp / 1 days at last write
     }
 
     // --------------------------------------------------------------- errors
@@ -35,11 +35,20 @@ contract AgentBudget {
 
     // --------------------------------------------------------------- events
 
-    event PolicySet(address indexed agent, uint128 perCallMax, uint128 dailyMax);
+    event PolicySet(
+        address indexed agent,
+        uint128 perCallMax,
+        uint128 dailyMax
+    );
     event AgentRevoked(address indexed agent);
     event PayeeSet(address indexed payee, bool allowed);
     event Withdrawn(address indexed to, uint256 amount);
-    event Paid(address indexed agent, address indexed payee, uint256 amount, bytes32 indexed requestId);
+    event Paid(
+        address indexed agent,
+        address indexed payee,
+        uint256 amount,
+        bytes32 indexed requestId
+    );
 
     // -------------------------------------------------------------- storage
 
@@ -68,9 +77,17 @@ contract AgentBudget {
 
     // ---------------------------------------------------------- owner admin
 
-    function setPolicy(address agent, uint128 perCallMax, uint128 dailyMax) external onlyOwner {
+    function setPolicy(
+        address agent,
+        uint128 perCallMax,
+        uint128 dailyMax
+    ) external onlyOwner {
         if (agent == address(0)) revert ZeroAddress();
-        policies[agent] = Policy({perCallMax: perCallMax, dailyMax: dailyMax, active: true});
+        policies[agent] = Policy({
+            perCallMax: perCallMax,
+            dailyMax: dailyMax,
+            active: true
+        });
         emit PolicySet(agent, perCallMax, dailyMax);
     }
 
@@ -131,7 +148,9 @@ contract AgentBudget {
     }
 
     /// @notice Raw spend record; exposed for off-chain inspection.
-    function spendOf(address agent) external view returns (uint128 spent, uint64 day) {
+    function spendOf(
+        address agent
+    ) external view returns (uint128 spent, uint64 day) {
         Spend memory s = spends[agent];
         return (s.spent, s.day);
     }

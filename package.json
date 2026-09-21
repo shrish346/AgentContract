@@ -1,0 +1,24 @@
+{
+  "name": "agentbudget",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "server": "tsx server/index.ts",
+    "demo": "tsx client/demo.ts",
+    "typecheck": "tsc --noEmit",
+    "abi": "node scripts/extract-abi.mjs",
+    "attacks": "tsx scripts/attacks.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.1",
+    "dotenv": "18.0.1",
+    "hono": "4.13.8",
+    "viem": "2.56.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.4",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3"
+  }
+}
